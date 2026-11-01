@@ -3,7 +3,7 @@
   import notes from '#lib/data/desk-notes.json';
   import { uniqueById, type Report } from '#lib/kb/causes';
   import { tenantOf } from '#lib/kb/locales';
-  import { groupByProblem, mistagged, type Problem } from '#lib/kb/problems';
+  import { alsoOneDay, groupByProblem, mistagged, type Problem } from '#lib/kb/problems';
 
   // `tickets`: the ticket each problem is filed as, by problem. A problem without one says so.
   let { ticket, tickets = {} }: { ticket: number; tickets?: Partial<Record<Problem, { label: string; href: string }>> } = $props();
@@ -44,7 +44,18 @@
   </tbody>
 </table>
 
+{#each groups as g (g.problem)}
+  {@const moved = alsoOneDay(g, notes.oneDayMove)}
+  {#if moved}
+    <p class="note">
+      {moved} of the <code>{g.problem}</code> reports read as a one-day move: counted under
+      <code>{g.problem}</code>, where they are filed, and again under <code>one-day</code>.
+    </p>
+  {/if}
+{/each}
+
 <style>
+  .note { color: var(--muted); font-size: 0.85em; }
   .sum { font-size: 1.1rem; }
   .tags, .tenants { color: var(--muted); font-size: 0.85em; }
   .open td { background: var(--warn-bg); }

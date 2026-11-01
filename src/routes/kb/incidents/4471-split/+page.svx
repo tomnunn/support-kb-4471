@@ -35,7 +35,8 @@ Fixing the parser does not close #4471. Each problem below has its own ticket no
 <ProblemTable ticket={4471} {tickets} />
 
 Counted from the export at render time: one report per id, placed by what its tenant runs, not by
-its subject or its intake tag. Intake tags come from the reporter's browser; a tenant's people
+its subject or its intake tag. Reports the desk read as a one-day move stay counted where they are
+filed, as on the #4471 page, and count again as their own problem. Intake tags come from the reporter's browser; a tenant's people
 often book from an en-US browser, so the tag is wrong in both directions.
 
 ### `parser`: the shared parser reads day-first dates month first

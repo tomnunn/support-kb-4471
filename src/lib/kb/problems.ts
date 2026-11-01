@@ -6,10 +6,15 @@ import { causeOf, uniqueById, type Cause, type Report, type Tenant } from '#lib/
 // `one-day`: the booking moved by a single day, no day/month flip. Neither parser nor hint.
 export type Problem = Cause | 'one-day' | 'unplaced';
 
-// A note is a person who read the body; the tenant rule never does. The note wins.
-export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem {
-  if (oneDayMove.includes(r.id)) return 'one-day';
+// Where a report is filed: by its tenant (causes.ts), as the desk counts it.
+export function filedAs(r: Report, t: Tenant | undefined): Problem {
   return causeOf(r, t) ?? 'unplaced';
+}
+
+// Every problem a report shows. A report the desk read as a one-day move stays counted where it is
+// filed (the desk's rule, CauseTable) and also counts as its own problem.
+export function problemsOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem[] {
+  return oneDayMove.includes(r.id) ? [filedAs(r, t), 'one-day'] : [filedAs(r, t)];
 }
 
 export type ProblemGroup = {
@@ -29,8 +34,7 @@ export function groupByProblem(
 ): ProblemGroup[] {
   const byProblem = new Map<Problem, Report[]>();
   for (const r of uniqueById(reports)) {
-    const p = problemOf(r, tenantOf(r), oneDayMove);
-    byProblem.set(p, [...(byProblem.get(p) ?? []), r]);
+    for (const p of problemsOf(r, tenantOf(r), oneDayMove)) byProblem.set(p, [...(byProblem.get(p) ?? []), r]);
   }
   return [...byProblem.entries()]
     .map(([problem, rs]) => {
@@ -50,4 +54,9 @@ export function groupByProblem(
 // Reports whose intake tag names a different cause than the one they were placed under.
 export function mistagged(g: ProblemGroup): number {
   return g.reports.filter((r) => r.meta.intakeTag !== g.problem).length;
+}
+
+// Reports in a filed group that also count under one-day: footnoted, as CauseTable does.
+export function alsoOneDay(g: ProblemGroup, oneDayMove: readonly string[]): number {
+  return g.problem === 'one-day' ? 0 : g.reports.filter((r) => oneDayMove.includes(r.id)).length;
 }
