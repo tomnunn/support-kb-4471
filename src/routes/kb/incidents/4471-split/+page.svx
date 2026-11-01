@@ -4,7 +4,7 @@ title: '#4471 split: one ticket, several bugs'
 owner: Tom Nunn
 status: proposed
 reviewed: 2026-11-01
-signature: Tom Nunn
+signature: v1.eyJzdWIiOiIzNTM4IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTM1Njg4ODEsImV4cCI6MTc5MzY1NTI4MX0.XBQIyUTO7oeSV89jPwChq3I3gmYgAjbVuHauxM_Py58
 ---
 
 <script>
